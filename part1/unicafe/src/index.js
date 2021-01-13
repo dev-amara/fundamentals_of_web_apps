@@ -6,9 +6,10 @@ const Button = ({ text, handleClick }) => <button onClick={handleClick}>{text}</
 
 const Statistic = ({ text, value }) => {
     return (
-        <p>
-            {text} {value}
-        </p>
+        <tr>
+            <td>{text}</td>
+            <td>{value}</td>
+        </tr>
     );
 };
 
@@ -21,13 +22,17 @@ const Statistics = ({ result }) => {
     if (total > 0) {
         return (
             <div>
-                <h1>Statistics</h1>
-                <Statistic text="Good" value={good} />
-                <Statistic text="Neutral" value={neutral} />
-                <Statistic text="Bad" value={bad} />
-                <Statistic text="All" value={total} />
-                <Statistic text="Average" value={average} />
-                <Statistic text="Positive" value={positive} />
+                <h1>statistics</h1>
+                <table>
+                    <tbody>
+                        <Statistic text="Good" value={good} />
+                        <Statistic text="Neutral" value={neutral} />
+                        <Statistic text="Bad" value={bad} />
+                        <Statistic text="All" value={total} />
+                        <Statistic text="Average" value={average} />
+                        <Statistic text="Positive" value={positive} />
+                    </tbody>
+                </table>
             </div>
         );
     }
@@ -52,8 +57,8 @@ const App = () => {
     const obj = {
         good: good,
         neutral: neutral,
-        bad: bad
-    }
+        bad: bad,
+    };
 
     return (
         <div>
