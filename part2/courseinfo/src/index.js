@@ -24,10 +24,9 @@ const Content = (props) => {
     );
 };
 
-const Total = (props) => {
-    const { parts } = props;
-    const sum = parts.reduce(function (sum, current) {
-        return sum + current.exercises;
+const Total = ({parts}) => {
+    const sum = parts.reduce(function (sum, part) {
+        return sum + part.exercises;
     }, 0);
     return <p><b>Total of  {sum} exercises</b></p>;
 };
