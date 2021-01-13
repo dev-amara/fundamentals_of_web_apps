@@ -29,7 +29,7 @@ const Total = (props) => {
     const sum = parts.reduce(function (sum, current) {
         return sum + current.exercises;
     }, 0);
-    return <p>Number of exercises {sum}</p>;
+    return <p><b>Total of  {sum} exercises</b></p>;
 };
 
 const Course = (props) => {
@@ -62,6 +62,11 @@ const App = () => {
                 exercises: 14,
                 id: 3,
             },
+            {
+                name: 'Redux',
+                exercises: 11,
+                id: 4
+              }
         ],
     };
 
