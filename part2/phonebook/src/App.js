@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import Persons from './components/Persons';
+import Filter from './components/Filter';
+import PersonForm from './components/PersonForm';
 
 const App = () => {
     const [persons, setPersons] = useState([
@@ -10,7 +13,7 @@ const App = () => {
     const [nameAndNumber, setNameAndNumber] = useState({ name: '', number: '' });
     const [newSearch, setNewSearch] = useState('');
 
-    const { name, number } = nameAndNumber;
+    const { name } = nameAndNumber;
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -34,36 +37,18 @@ const App = () => {
 
     const handleSearch = (event) => setNewSearch(event.target.value);
 
-    const showPersons = () => {
-        const data = persons.filter((person) => person.name.toLowerCase().includes(newSearch.toLowerCase()));
-        return data.map((value) => (
-            <div key={value.name}>
-                {value.name} {value.number}
-            </div>
-        ));
-    };
+    const showPersons = () => persons.filter((person) => person.name.toLowerCase().includes(newSearch.toLowerCase()));
 
     return (
         <div>
             <h2>Phonebook</h2>
-            <div>
-                <p>filter shown with</p>
-                <input onChange={handleSearch} value={newSearch} name="search" />
-            </div>
-            <h2>add a new</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    name: <input onChange={handleChange} value={name} name="name" />
-                </div>
-                <div>
-                    number: <input onChange={handleChange} value={number} name="number" />
-                </div>
-                <div>
-                    <button type="submit">add</button>
-                </div>
-            </form>
-            <h2>Numbers</h2>
-            <div>{showPersons()}</div>
+            <Filter newSearch={newSearch} handleSearch={handleSearch} />
+
+            <h3>add a new</h3>
+            <PersonForm person={nameAndNumber} onChange={handleChange} submit={handleSubmit}/>
+
+            <h3>Numbers</h3>
+            <Persons persons={showPersons()} />
         </div>
     );
 };
