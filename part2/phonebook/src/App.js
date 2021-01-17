@@ -5,12 +5,14 @@ import PersonForm from './components/PersonForm';
 import personService from './services/persons';
 import SuccessNotification from './components/SuccessNotification';
 import './index.css';
+import ErrorNotification from './components/ErrorNotification';
 
 const App = () => {
     const [persons, setPersons] = useState([]);
     const [nameAndNumber, setNameAndNumber] = useState({ name: '', number: '' });
     const [newSearch, setNewSearch] = useState('');
     const [successMessage, setSuccessMessage] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     const { name } = nameAndNumber;
 
@@ -24,6 +26,13 @@ const App = () => {
         setSuccessMessage(message);
         setTimeout(() => {
             setSuccessMessage(null);
+        }, 5000);
+    };
+
+    const errorContent = (message) => {
+        setErrorMessage(message);
+        setTimeout(() => {
+            setErrorMessage(null);
         }, 5000);
     };
 
@@ -41,6 +50,7 @@ const App = () => {
                     setNameAndNumber({ number: '', name: '' });
                 })
                 .catch((error) => {
+                    errorContent(error, error.message);
                     console.log(error.response.data);
                 });
         } else {
@@ -63,6 +73,7 @@ const App = () => {
                                 : person,
                         ),
                     );
+                    successContent(`Update ${returnedPerson.name}`);
                 })
                 .catch((error) => {
                     console.log(error.response.data);
@@ -76,8 +87,10 @@ const App = () => {
                 .deletePerson(id)
                 .then(() => {
                     setPersons(persons.filter((p) => p.id !== id));
+                    setSuccessMessage(`Information of ${name} has been removed from the server`);
                 })
                 .catch((error) => {
+                    errorContent(`Information of ${name} has already been remove from server`);
                     console.log(error.response.data);
                 });
         }
@@ -98,6 +111,7 @@ const App = () => {
         <div>
             <h2>Phonebook</h2>
             <SuccessNotification message={successMessage} />
+            <ErrorNotification message={errorMessage} />
             <Filter newSearch={newSearch} handleSearch={handleSearch} />
 
             <h3>add a new</h3>
