@@ -33,7 +33,30 @@ const App = () => {
                     console.log(error.response.data);
                 });
         } else {
-            alert(`${name} is already added to phonebook`);
+            const personInArray = persons.filter((person) => person.name === name);
+            const id = personInArray[0].id;
+
+            window.confirm(
+                `${nameAndNumber.name} is already added to the phonebook, replace the old number with a new one?`,
+            );
+            personService
+                .update(id, { ...nameAndNumber, id: id })
+                .then((returnedPerson) => {
+                    console.log('return', returnedPerson);
+                    setPersons(
+                        persons.map((person) =>
+                            person.id === id
+                                ? {
+                                      ...nameAndNumber,
+                                      id: returnedPerson.id,
+                                  }
+                                : person,
+                        ),
+                    );
+                })
+                .catch((error) => {
+                    console.log(error.response.data);
+                });
         }
     };
 
