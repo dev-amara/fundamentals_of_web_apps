@@ -4,8 +4,7 @@ const Persons = ({ persons }) => {
     const showPersons = () =>
         persons.map((person) =>
             <div key={person.name}>
-                {person.name}
-                {person.number}
+                {person.name}  {person.number}
             </div>)
     return (
         <>
