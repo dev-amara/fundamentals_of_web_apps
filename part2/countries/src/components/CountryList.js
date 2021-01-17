@@ -10,8 +10,12 @@ const CountryList = ({ countries, setSelectedCountry, showCountry }) => {
             return <CountryDetails country={countries[0]} />;
         } else if (countries.length > 1) {
             return countries.map((country) => (
-                <Country key={country.name} country={country} setCountry={setSelectedCountry}
-                         showCountry={showCountry} />
+                <Country
+                    key={country.name}
+                    country={country}
+                    setCountry={setSelectedCountry}
+                    showCountry={showCountry}
+                />
             ));
         } else {
             return <div>No countries match your search.</div>;
