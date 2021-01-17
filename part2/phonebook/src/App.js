@@ -25,8 +25,16 @@ const App = () => {
         const indexOfPerson = persons.map((person) => person.name).includes(name);
 
         if (!indexOfPerson) {
-            setPersons(persons.concat(nameAndNumber));
-            setNameAndNumber({ number: '', name: '' });
+            axios
+                .post('http://localhost:3001/persons', nameAndNumber)
+                .then((response) => response.data)
+                .then((newPerson) => {
+                    setPersons(persons.concat(newPerson));
+                    setNameAndNumber({ number: '', name: '' });
+                })
+                .catch((error) => {
+                    console.log(error.response.data);
+                });
         } else {
             alert(`${name} is already added to phonebook`);
         }
@@ -49,7 +57,7 @@ const App = () => {
             <Filter newSearch={newSearch} handleSearch={handleSearch} />
 
             <h3>add a new</h3>
-            <PersonForm person={nameAndNumber} onChange={handleChange} submit={handleSubmit}/>
+            <PersonForm person={nameAndNumber} onChange={handleChange} submit={handleSubmit} />
 
             <h3>Numbers</h3>
             <Persons persons={showPersons()} />
