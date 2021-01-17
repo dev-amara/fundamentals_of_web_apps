@@ -3,11 +3,14 @@ import Persons from './components/Persons';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import personService from './services/persons';
+import SuccessNotification from './components/SuccessNotification';
+import './index.css';
 
 const App = () => {
     const [persons, setPersons] = useState([]);
     const [nameAndNumber, setNameAndNumber] = useState({ name: '', number: '' });
     const [newSearch, setNewSearch] = useState('');
+    const [successMessage, setSuccessMessage] = useState(null);
 
     const { name } = nameAndNumber;
 
@@ -16,6 +19,13 @@ const App = () => {
             setPersons(persons);
         });
     }, []);
+
+    const successContent = (message) => {
+        setSuccessMessage(message);
+        setTimeout(() => {
+            setSuccessMessage(null);
+        }, 5000);
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -27,6 +37,7 @@ const App = () => {
                 .create(nameAndNumber)
                 .then((newPerson) => {
                     setPersons(persons.concat(newPerson));
+                    successContent(`Added ${newPerson.name}`);
                     setNameAndNumber({ number: '', name: '' });
                 })
                 .catch((error) => {
@@ -42,7 +53,6 @@ const App = () => {
             personService
                 .update(id, { ...nameAndNumber, id: id })
                 .then((returnedPerson) => {
-                    console.log('return', returnedPerson);
                     setPersons(
                         persons.map((person) =>
                             person.id === id
@@ -87,6 +97,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <SuccessNotification message={successMessage} />
             <Filter newSearch={newSearch} handleSearch={handleSearch} />
 
             <h3>add a new</h3>
