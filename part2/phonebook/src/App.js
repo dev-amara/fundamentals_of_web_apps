@@ -37,6 +37,19 @@ const App = () => {
         }
     };
 
+    const handleDelete = async (id, name) => {
+        if (window.confirm(`Delete ${name}?`)) {
+            personService
+                .deletePerson(id)
+                .then(() => {
+                    setPersons(persons.filter((p) => p.id !== id));
+                })
+                .catch((error) => {
+                    console.log(error.response.data);
+                });
+        }
+    };
+
     const handleChange = (event) => {
         event.preventDefault();
         const { value, name } = event.target;
@@ -57,7 +70,7 @@ const App = () => {
             <PersonForm person={nameAndNumber} onChange={handleChange} submit={handleSubmit} />
 
             <h3>Numbers</h3>
-            <Persons persons={showPersons()} />
+            <Persons persons={showPersons()} deletePerson={handleDelete} />
         </div>
     );
 };
