@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Persons from './components/Persons';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
-import axios from 'axios';
+import personService from './services/persons';
 
 const App = () => {
     const [persons, setPersons] = useState([]);
@@ -11,23 +11,20 @@ const App = () => {
 
     const { name } = nameAndNumber;
 
-    useEffect(()=>{
-        axios
-            .get('http://localhost:3001/persons')
-            .then(response => {
-                setPersons(response.data)
-            })
-    }, [])
+    useEffect(() => {
+        personService.getAll().then((persons) => {
+            setPersons(persons);
+        });
+    }, []);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         const indexOfPerson = persons.map((person) => person.name).includes(name);
 
         if (!indexOfPerson) {
-            axios
-                .post('http://localhost:3001/persons', nameAndNumber)
-                .then((response) => response.data)
+            await personService
+                .create(nameAndNumber)
                 .then((newPerson) => {
                     setPersons(persons.concat(newPerson));
                     setNameAndNumber({ number: '', name: '' });
