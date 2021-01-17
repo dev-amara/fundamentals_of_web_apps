@@ -1,19 +1,25 @@
 import React from 'react';
 import Languages from './Languages';
+import Weather from './Weather';
 
 const CountryDetails = ({ country }) => {
+    const { population, capital, flag, name } = country;
+
     return (
         <div>
-            <div key={country.name}>
-                <h2>{country.name}</h2>
-                <p>Capital {country.capital}</p>
-                <p>Population {country.population}</p>
+            <div key={name}>
+                <h2>{name}</h2>
+                <div>capital {capital}</div>
+                <div>population {population}</div>
             </div>
             <div>
-                <h3>Languages</h3>
+                <h3>Sopken languages</h3>
                 <Languages country={country} />
             </div>
-            <img src={country.flag} height="100" width="100" alt={`flag of ${country.name}`} />
+            <img src={flag} height="100" width="100" alt={`flag of ${name}`} />
+            <div>
+                <Weather country={country} />
+            </div>
         </div>
     );
 };
