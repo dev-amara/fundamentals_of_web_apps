@@ -24,8 +24,28 @@ let persons = [
   },
 ];
 
+app.use(express.json());
+
+const generateId = (max) => {
+  return Math.floor(Math.random() * Math.floor(max));
+};
+
 app.get("/api/persons", (request, response) => {
   response.json(persons);
+});
+
+app.post("/api/persons", (request, response) => {
+  const body = request.body;
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: generateId(10000),
+  };
+
+  persons = persons.concat(person);
+
+  response.json(person);
 });
 
 app.get("/api/persons/:id", (request, response) => {
