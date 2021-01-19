@@ -61,6 +61,18 @@ app.post("/api/persons", (request, response) => {
   response.json(person);
 });
 
+app.put("/api/persons/:id", (request, response, next) => {
+  const body = request.body;
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: generateId(10000),
+  };
+  const data = persons.concat(person);
+  response.json(data);
+});
+
 app.get("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   const note = persons.find((note) => note.id === id);
