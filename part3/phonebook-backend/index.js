@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+app.use(express.static("build"));
 
 morgan.token("data", (req) => JSON.stringify(req.body));
 app.use(
