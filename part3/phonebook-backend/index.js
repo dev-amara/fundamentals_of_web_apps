@@ -14,33 +14,6 @@ app.use(
   )
 );
 
-let persons = [
-  {
-    name: "Arto Hellas",
-    number: "040-123456",
-    id: 1,
-  },
-  {
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-    id: 2,
-  },
-  {
-    name: "Dan Abramov",
-    number: "12-43-234345",
-    id: 3,
-  },
-  {
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-    id: 4,
-  },
-];
-
-const generateId = (max) => {
-  return Math.floor(Math.random() * Math.floor(max));
-};
-
 app.get("/api/persons", (request, response) => {
   Person.find({}).then((notes) => {
     response.json(notes);
@@ -64,9 +37,11 @@ app.post("/api/persons", (request, response) => {
 app.put("/api/persons/:id", (request, response, next) => {
   const body = request.body;
 
-  const person = { name: body.name, number: body.number };
-
-  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+  Person.findByIdAndUpdate(
+    request.params.id,
+    { name: body.name, number: body.number },
+    { new: true }
+  )
     .then((updatedPerson) => {
       response.json(updatedPerson);
     })
@@ -96,8 +71,9 @@ app.delete("/api/persons/:id", (request, response, next) => {
 
 app.get("/info", (request, response) => {
   Person.countDocuments().then((count) => {
-    const pagePhoneBookInfo = `<div><p>Phonebook has info for ${count} people</p><p>${new Date()}</p></div>`;
-    response.send(pagePhoneBookInfo);
+    response.send(
+      `<div><p>Phonebook has info for ${count} people</p><p>${new Date()}</p></div>`
+    );
   });
 });
 
