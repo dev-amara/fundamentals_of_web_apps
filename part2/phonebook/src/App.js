@@ -76,7 +76,6 @@ const App = () => {
                 })
                 .catch((error) => {
                     errorContent(error.response.data.error);
-                    console.log(error.response.data);
                 });
         }
     };
@@ -91,7 +90,6 @@ const App = () => {
                 })
                 .catch((error) => {
                     errorContent(`Information of ${name} has already been remove from server`);
-                    console.log(error.response.data);
                 });
         }
     };
