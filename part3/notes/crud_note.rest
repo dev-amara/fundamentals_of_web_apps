@@ -1,0 +1,24 @@
+GET http://localhost:3001/api/notes/
+
+###
+POST http://localhost:3001/api/notes
+Content-type: application/json
+
+{
+  "name": "sample",
+  "time": "Wed, 21 Oct 2015 18:27:50 GMT",
+  "content":"content"
+}
+
+###
+PUT http://localhost:3001/api/notes/60082b0a3f404d36b9d9130c
+Content-type: application/json
+
+{
+  "name": "amara",
+  "time": "Wed, 21 Oct 2015 18:27:50 GMT",
+  "content":"content"
+}
+
+###
+DELETE http://localhost:3001/api/notes/60082b0a3f404d36b9d9130c
