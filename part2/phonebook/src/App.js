@@ -50,8 +50,7 @@ const App = () => {
                     setNameAndNumber({ number: '', name: '' });
                 })
                 .catch((error) => {
-                    errorContent(error, error.message);
-                    console.log(error.response.data);
+                    errorContent(error.response.data.error);
                 });
         } else {
             const personInArray = persons.filter((person) => person.name === name);
@@ -76,6 +75,7 @@ const App = () => {
                     successContent(`Update ${returnedPerson.name}`);
                 })
                 .catch((error) => {
+                    errorContent(error.response.data.error);
                     console.log(error.response.data);
                 });
         }
