@@ -20,7 +20,7 @@ app.get("/api/persons", (request, response) => {
   });
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
 
   // if (!body.name && !body.number) {
@@ -29,9 +29,12 @@ app.post("/api/persons", (request, response) => {
 
   const person = new Person({ name: body.name, number: body.number });
 
-  person.save().then((person) => {
-    response.json(person);
-  });
+  person
+    .save()
+    .then((person) => {
+      response.json(person);
+    })
+    .catch((error) => next(error));
 });
 
 app.put("/api/persons/:id", (request, response, next) => {
@@ -86,6 +89,12 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message);
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  }
+
+  if (error.name === "ValidationError") {
+    return response
+      .status(400)
+      .send({ error: `expected \`name\` to be unique` });
   }
   next(error);
 };
