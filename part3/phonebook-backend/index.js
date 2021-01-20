@@ -1,7 +1,11 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+const mongoose = require("mongoose");
+
 app.use(express.static("build"));
+app.use(express.json());
 
 morgan.token("data", (req) => JSON.stringify(req.body));
 app.use(
@@ -9,6 +13,35 @@ app.use(
     ":method :url :status  :res[content-length] - :response-time ms :data "
   )
 );
+
+const url = process.env.MONGODB_URI;
+
+console.log("connecting to", url);
+
+mongoose
+  .connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+  })
+  .then((result) => console.log("connected to MongoDB"))
+  .catch((error) => console.log("error connecting to MongoDB:", error.message));
+
+const personSchema = new mongoose.Schema({
+  name: String,
+  number: Number,
+});
+
+personSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
+
+const Person = mongoose.model("Person", personSchema);
 
 let persons = [
   {
@@ -33,14 +66,14 @@ let persons = [
   },
 ];
 
-app.use(express.json());
-
 const generateId = (max) => {
   return Math.floor(Math.random() * Math.floor(max));
 };
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then((notes) => {
+    response.json(notes);
+  });
 });
 
 app.post("/api/persons", (request, response) => {
@@ -74,13 +107,14 @@ app.put("/api/persons/:id", (request, response, next) => {
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const note = persons.find((note) => note.id === id);
-  if (note) {
-    response.json(note);
-  } else {
-    response.status(404).end();
-  }
+  const id = request.params.id;
+  Person.findById(id).then((person) => {
+    if (person) {
+      response.json(person);
+    } else {
+      response.status(404).end();
+    }
+  });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -91,9 +125,10 @@ app.delete("/api/persons/:id", (request, response) => {
 });
 
 app.get("/info", (request, response) => {
-  const count = persons.length;
-  const pagePhoneBookInfo = `<div><p>Phonebook has info for ${count} people</p><p>${new Date()}</p></div>`;
-  response.send(pagePhoneBookInfo);
+  Person.countDocuments().then((count) => {
+    const pagePhoneBookInfo = `<div><p>Phonebook has info for ${count} people</p><p>${new Date()}</p></div>`;
+    response.send(pagePhoneBookInfo);
+  });
 });
 
 const PORT = process.env.PORT || 3001;
