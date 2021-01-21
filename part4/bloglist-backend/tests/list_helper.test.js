@@ -89,7 +89,7 @@ describe('total likes', () => {
   })
 })
 
-describe('finds out which blog has most likes', () => {
+test('finds out which blog has most likes', () => {
   const result = listHelper.favoriteBlog(listWhithManyblog)
   expect(result).toEqual({
     title: 'Canonical string reduction',
@@ -98,7 +98,13 @@ describe('finds out which blog has most likes', () => {
   })
 })
 
-describe('finds out which blog has most blogs', () => {
+test('finds out which blog has most blogs', () => {
   const result = listHelper.mostBlogs(listWhithManyblog)
   expect(result).toEqual({ author: 'Robert C. Martin', blogs: 3 })
 })
+
+test('The function returns the author, whose blog posts have the largest amount of likes',() => {
+  const result = listHelper.mostLikes(listWhithManyblog)
+  expect(result).toEqual({ author: 'Edsger W. Dijkstra', likes: 17 })
+})
+
