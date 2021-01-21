@@ -1,0 +1,12 @@
+GET http://localhost:3003/api/blogs
+
+###
+POST http://localhost:3003/api/blogs
+Content-type: application/json
+
+{
+  "title": "Java",
+  "author": "Amara Bamba",
+  "url": "http://java.com",
+  "likes": 1000
+}
