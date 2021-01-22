@@ -22,6 +22,12 @@ const initialBlog = {
   likes: 1000,
 }
 
+const blogWithoutLike = {
+  title: 'Symfony is cool',
+  author: 'Ble Regis',
+  url: 'http://localhost:3091',
+}
+
 const nonExistingId = async () => {
   const blog = new Blog({
     title: 'Js is very good',
@@ -45,4 +51,5 @@ module.exports = {
   initialBlog,
   nonExistingId,
   blogsInDb,
+  blogWithoutLike
 }
