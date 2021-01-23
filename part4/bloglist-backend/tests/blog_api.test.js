@@ -74,6 +74,22 @@ describe('POST: /api/blogs', () => {
   })
 })
 
+describe('DELETE: /api/blogs/id', () => {
+  test('fails if id is invalid', async () => {
+    const invalidId = '1234rgj8900j0'
+    await api
+      .delete(`/api/blogs/${invalidId}`)
+      .expect(400)
+  })
+
+  test('fails if the blog doesn\'t exist', async () => {
+    const id = await helper.nonExistingId()
+    await api
+      .delete(`/api/blogs/${id}`)
+      .expect(404)
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
