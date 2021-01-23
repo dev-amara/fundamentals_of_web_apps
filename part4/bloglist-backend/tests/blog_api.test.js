@@ -62,6 +62,16 @@ describe('POST: /api/blogs', () => {
 
     expect(response.body.likes).toBe(0)
   })
+
+  test('that verifies that if the title and url properties are missing from the request data', async () => {
+    let blog = new Blog(helper.blogWithoutTitleAndUrl)
+
+    await api
+      .post('/api/blogs')
+      .set('Content-Type', 'application/json')
+      .send(blog)
+      .expect(400)
+  })
 })
 
 afterAll(() => {
