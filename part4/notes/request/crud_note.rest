@@ -3,11 +3,13 @@ GET http://localhost:3001/api/notes/
 ###
 POST http://localhost:3001/api/notes
 Content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRldi1hbWFyYSIsImlkIjoiNjAwZDY4ZmIxNzM2MjcyYjQ3MTQyYzE1IiwiaWF0IjoxNjExNTA0MDUwfQ.H8Sd_1wLtN38cVraGSq-rs6lqutW8bVfu5NTif3F4wA
 
 {
   "name": "sample",
   "time": "Wed, 21 Oct 2015 18:27:50 GMT",
-  "content":"content"
+  "content": "content",
+  "userId": "600d68fb1736272b47142c15"
 }
 
 ###

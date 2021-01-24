@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/login
+Content-Type: application/json
+
+{
+  "username": "dev-amara",
+  "password": "12345"
+}
+
+###
