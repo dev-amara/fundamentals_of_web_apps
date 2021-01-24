@@ -77,16 +77,59 @@ describe('POST: /api/blogs', () => {
 describe('DELETE: /api/blogs/id', () => {
   test('fails if id is invalid', async () => {
     const invalidId = '1234rgj8900j0'
+    await api.delete(`/api/blogs/${invalidId}`).expect(400)
+  })
+
+  test('fails if the blog doesnt exist', async () => {
+    const id = await helper.nonExistingId()
+    await api.delete(`/api/blogs/${id}`).expect(404)
+  })
+})
+
+describe('PUT: /api/blogs/id', () => {
+  test('fails if id is invalid', async () => {
+    const invalidId = '1234rgj8900j0'
+    await api.put(`/api/blogs/${invalidId}`).expect(400)
+  })
+
+  test('fails if the blog doesnt exist', async () => {
+    const id = await helper.nonExistingId()
+    await api.put(`/api/blogs/${id}`).expect(404)
+  })
+
+  test('fails with status 400 if the new object is invalid', async () => {
+    const blogs = await helper.blogsInDb()
+    const blog = blogs[0]
+    const updateWithNoTitle = { ...blog, title: null }
+    const updatetWithNoUrl = { ...blog, url: null }
+
     await api
-      .delete(`/api/blogs/${invalidId}`)
+      .put(`/api/blogs/${blog.id}`)
+      .set('Content-Type', 'application/json')
+      .send(updateWithNoTitle)
+      .expect(400)
+
+    await api
+      .put(`/api/blogs/${blog.id}`)
+      .set('Content-Type', 'application/json')
+      .send(updatetWithNoUrl)
       .expect(400)
   })
 
-  test('fails if the blog doesn\'t exist', async () => {
-    const id = await helper.nonExistingId()
+  test('succesfully update the blog member with one valid request', async () => {
+    const blogs = await helper.blogsInDb()
+    const blog = blogs[0]
+    const blogUpdate = { ...blog, likes: 9999 }
+
     await api
-      .delete(`/api/blogs/${id}`)
-      .expect(404)
+      .put(`/api/blogs/${blog.id}`)
+      .set('Content-Type', 'application/json')
+      .send(blogUpdate)
+      .expect(200)
+
+    const blogsAfter = await helper.blogsInDb()
+    const blogAfter = blogsAfter.filter((b) => b.id === blog.id)[0]
+    expect(blogAfter.likes).toBe(blogUpdate.likes)
   })
 })
 

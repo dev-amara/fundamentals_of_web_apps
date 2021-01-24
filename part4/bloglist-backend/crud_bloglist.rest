@@ -5,8 +5,22 @@ POST http://localhost:3003/api/blogs
 Content-type: application/json
 
 {
+  "title": "JS",
+  "author": "Bah Al Hassanah",
+  "url": "http://js.com",
+  "likes": 1000
+}
+
+###
+PUT http://localhost:3003/api/blogs/600aa6f24a71aadca5d52305
+Content-type: application/json
+
+{
   "title": "Java",
   "author": "Amara Bamba",
   "url": "http://java.com",
   "likes": 1000
 }
+
+###
+DELETE http://localhost:3003/api/blogs/600d526a30d98224f1188399
