@@ -5,13 +5,20 @@ const app = require('../app')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
+  await User.deleteMany({})
 
   for (let note of helper.initialBlogs) {
     let noteObject = new Blog(note)
     await noteObject.save()
+  }
+
+  for (let user of helper.initialUsers) {
+    let userObject = new User(user)
+    await userObject.save()
   }
 })
 
@@ -130,6 +137,93 @@ describe('PUT: /api/blogs/id', () => {
     const blogsAfter = await helper.blogsInDb()
     const blogAfter = blogsAfter.filter((b) => b.id === blog.id)[0]
     expect(blogAfter.likes).toBe(blogUpdate.likes)
+  })
+})
+
+describe('POST /api/users', () => {
+  test('fails with status 400 if the user is invalid', async () => {
+    await api
+      .post('/api/users')
+      .send({ name: 'amara', password: '12345' })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+
+    await api
+      .post('/api/users')
+      .send({ name: 'amara', username: 'dev-amara' })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+  })
+
+  describe('fails with status 400', () => {
+    test('username is not unique', async () => {
+      const username = helper.initialUsers[0].username
+
+      const response = await api
+        .post('/api/users')
+        .set('Content-Type', 'application/json')
+        .send({ username: username, name: 'amara', password: '12345' })
+        .expect(400)
+
+      const uniqueMessage = /unique/.test(response.body.error)
+      expect(uniqueMessage).toBe(true)
+      expect(response.body.error).toContain('username')
+
+      const users = await helper.usersInDb()
+      expect(users.length).toBe(helper.initialUsers.length)
+    })
+
+    test('username is less than 3 chars', async () => {
+      const response = await api
+        .post('/api/users')
+        .set('Content-Type', 'application/json')
+        .send({ username: 'am', name: 'am', password: '12' })
+        .expect(400)
+
+      const minLengthRegex = /minimum allowed length \(\d+\)/
+      const isMinLengthError = minLengthRegex.test(response.body.error)
+      expect(isMinLengthError).toBe(true)
+      expect(response.body.error).toContain('username')
+
+      const users = await helper.usersInDb()
+      expect(users.length).toBe(helper.initialUsers.length)
+    })
+
+    test('password is less than 3 chars', async () => {
+      const response = await api
+        .post('/api/users')
+        .set('Content-Type', 'application/json')
+        .send({ username: 'okokok', name: 'amara', password: '12' })
+        .expect(400)
+
+      const minLengthRegex = /minimum allowed length \(\d+\)/
+      const isMinLengthError = minLengthRegex.test(response.body.error)
+      expect(isMinLengthError).toBe(true)
+      expect(response.body.error).toContain('password')
+
+      const usersAtEnd = await helper.usersInDb()
+      expect(usersAtEnd.length).toBe(helper.initialUsers.length)
+    })
+  })
+
+  test('saves the user to db if valid', async () => {
+    const user = {
+      username: 'bamba',
+      name: 'bamba',
+      password: 'bamba',
+    }
+
+    await api
+      .post('/api/users')
+      .set('Content-Type', 'application/json')
+      .send(user)
+      .expect(201)
+
+    const users = await helper.usersInDb()
+    expect(users.length).toBe(helper.initialUsers.length + 1)
+
+    const usernames = users.map((user) => user.username)
+    expect(usernames).toContain(user.username)
   })
 })
 
