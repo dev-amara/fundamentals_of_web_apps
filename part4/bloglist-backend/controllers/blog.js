@@ -59,11 +59,25 @@ blogsRouter.put('/:id', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
+  const { token } = request
+  const decodedToken = jwt.verify(token, process.env.SECRET_KEY)
+  if (!token || !decodedToken.id) {
+    const authentication = new Error('Invalid or missing authentication token')
+    authentication.name = 'Authentification'
+    throw authentication
+  }
+
   const blog = await Blog.findById(request.params.id)
   if (!blog) return response.status(404).end()
 
-  await blog.remove()
-  return response.status(204).end()
+  if (blog.user.toString() === decodedToken.id.toString()) {
+    await blog.remove()
+    return response.status(204).end()
+  }
+
+  const error = new Error('User is not permitted to modify this resource')
+  error.name = 'Forbidden'
+  throw error
 })
 
 module.exports = blogsRouter
