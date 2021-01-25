@@ -5,10 +5,9 @@ const jwt = require('jsonwebtoken')
 
 const getTokenFrom = (request) => {
   const authorization = request.get('authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7)
-  }
-  return null
+  return authorization && authorization.toLowerCase().startsWith('bearer ')
+    ? authorization.substring(7)
+    : null
 }
 
 blogsRouter.get('/', async (request, response) => {
@@ -20,6 +19,7 @@ blogsRouter.post('/', async (request, response) => {
   const body = request.body
   const token = getTokenFrom(request)
   const decodedToken = jwt.verify(token, process.env.SECRET)
+
   if (!token || !decodedToken.id) {
     const error = new Error('token missing or invalid')
     error.name = 'Authentification'
@@ -38,9 +38,11 @@ blogsRouter.post('/', async (request, response) => {
   const savedBlog = await blog.save()
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
+
   await savedBlog
     .populate({ path: 'user', select: ['name', 'username'] })
     .execPopulate()
+
   response.status(201).json(savedBlog)
 })
 
