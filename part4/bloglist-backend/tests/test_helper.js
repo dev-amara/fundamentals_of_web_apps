@@ -42,6 +42,13 @@ const blogWithoutLike = {
   url: 'http://localhost:3091',
 }
 
+const validBlog = {
+  title: 'JAVA is not easy',
+  author: 'Amara Bouake',
+  url: 'http://localhost:3003',
+  likes: 3500,
+}
+
 const blogWithoutTitleAndUrl = {
   author: 'Ble Regis',
   likes: 1000,
@@ -70,6 +77,12 @@ const usersInDb = async () => {
   return users.map((user) => user.toJSON())
 }
 
+const getLatestBlogInDb = async () => {
+  const blogs = await Blog.find().sort({ _id: -1 }).limit(1)
+
+  return blogs.map((blog) => blog.toJSON())[0]
+}
+
 module.exports = {
   initialBlogs,
   initialBlog,
@@ -79,4 +92,6 @@ module.exports = {
   blogWithoutTitleAndUrl,
   initialUsers,
   usersInDb,
+  validBlog,
+  getLatestBlogInDb,
 }

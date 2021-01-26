@@ -1,24 +1,48 @@
 const supertest = require('supertest')
 const mongoose = require('mongoose')
 const helper = require('./test_helper')
+const jwt = require('jsonwebtoken')
 const app = require('../app')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
+const store = {}
+
 beforeEach(async () => {
   await Blog.deleteMany({})
   await User.deleteMany({})
 
-  for (let note of helper.initialBlogs) {
-    let noteObject = new Blog(note)
-    await noteObject.save()
-  }
-
   for (let user of helper.initialUsers) {
     let userObject = new User(user)
     await userObject.save()
+  }
+
+  const savedUsers = await helper.usersInDb()
+
+  const userForBlogs = {
+    username: savedUsers[0].username,
+    id: savedUsers[0].id,
+  }
+
+  const userForNoBlogs = {
+    username: savedUsers[1].username,
+    id: savedUsers[1].id,
+  }
+
+  const token = await jwt.sign(userForBlogs, process.env.SECRET_KEY)
+  const unauthorizedToken = jwt.sign(userForNoBlogs, process.env.SECRET_KEY)
+
+  store.token = `Bearer ${token}`
+  store.userBlogId = userForBlogs.id
+  store.unauthorizedToken = `Bearer ${unauthorizedToken}`
+
+  const validUserId = savedUsers[0].id
+
+  for (let blog of helper.initialBlogs) {
+    let blogObject = new Blog({ ...blog, user: validUserId })
+    await blogObject.save()
   }
 })
 
@@ -47,6 +71,7 @@ describe('POST: /api/blogs', () => {
 
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', store.token)
       .set('Content-Type', 'application/json')
       .send(newBlog)
       .expect(201)
@@ -59,11 +84,26 @@ describe('POST: /api/blogs', () => {
     expect(id).toContain(response.body.id)
   })
 
+  test('and the saved blog referencing the user who added it', async () => {
+    const newBlog = new Blog(helper.validBlog)
+
+    await api
+      .post('/api/blogs')
+      .set('Authorization', store.token)
+      .set('Content-Type', 'application/json')
+      .send(newBlog)
+      .expect(201)
+
+    const latestBlog = await helper.getLatestBlogInDb()
+    expect(latestBlog.user.toString()).toBe(store.userBlogId)
+  })
+
   test('set 0 if like value is missing', async () => {
     const newBlog = new Blog(helper.blogWithoutLike)
 
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', store.token)
       .set('Content-Type', 'application/json')
       .send(newBlog)
 
@@ -75,21 +115,58 @@ describe('POST: /api/blogs', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', store.token)
       .set('Content-Type', 'application/json')
       .send(blog)
       .expect(400)
+  })
+
+  test('fails with status 401 if unauthenticated', async () => {
+    const newBlog = new Blog(helper.validBlog)
+
+    await api.post('/api/blogs').send(newBlog).expect(401)
   })
 })
 
 describe('DELETE: /api/blogs/id', () => {
   test('fails if id is invalid', async () => {
     const invalidId = '1234rgj8900j0'
-    await api.delete(`/api/blogs/${invalidId}`).expect(400)
+    await api
+      .delete(`/api/blogs/${invalidId}`)
+      .set('Authorization', store.token)
+      .expect(400)
   })
 
   test('fails if the blog doesnt exist', async () => {
     const id = await helper.nonExistingId()
-    await api.delete(`/api/blogs/${id}`).expect(404)
+    await api
+      .delete(`/api/blogs/${id}`)
+      .set('Authorization', store.token)
+      .expect(404)
+  })
+
+  test('fails with status 403 if the blog doesnt ref auth user', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', store.unauthorizedToken)
+      .expect(403)
+  })
+
+  test('deletes the blog member with that id if valid', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', store.token)
+      .expect(204)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    const blogIds = blogsAtEnd.map((blog) => blog.id)
+    expect(blogIds).not.toContain(blogToDelete.id)
   })
 })
 
