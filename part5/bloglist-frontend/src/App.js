@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import "./index.css";
 import Blog from "./components/Blog";
 import Notification from "./components/Notifications";
+import SuccessNotification from "./components/SuccessNotification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -13,6 +15,7 @@ const App = () => {
   const [url, setUrl] = useState("");
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -56,6 +59,12 @@ const App = () => {
         author: author,
         url: url,
       });
+      setSuccessMessage(
+        `a new blog ${blogObject.title} by ${blogObject.author}`
+      );
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
       setBlogs(blogs.concat(blogObject));
       setTitle("");
       setAuthor("");
@@ -139,6 +148,7 @@ const App = () => {
   return (
     <div>
       <Notification message={errorMessage} />
+      <SuccessNotification message={successMessage} />
       {user === null ? (
         loginForm()
       ) : (
