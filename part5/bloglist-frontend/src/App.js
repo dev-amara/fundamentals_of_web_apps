@@ -16,6 +16,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [loginVisible, setLoginVisible] = useState(false);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -104,41 +105,56 @@ const App = () => {
     </>
   );
 
-  const blogForm = () => (
-    <div>
-      <h2>create new</h2>
-      <form onSubmit={handleCreateBlog}>
-        <div>
-          <label>title:</label>
-          <input
-            type="text"
-            value={title}
-            name="Title"
-            onChange={({ target }) => setTitle(target.value)}
-          />
+  const blogForm = () => {
+    const hideWhenVisible = { display: loginVisible ? "none" : "" };
+    const showWhenVisible = { display: loginVisible ? "" : "none" };
+
+    return (
+      <>
+        <div style={hideWhenVisible}>
+          <button onClick={() => setLoginVisible(true)}>new note</button>
         </div>
-        <div>
-          <label>author:</label>
-          <input
-            type="text"
-            value={author}
-            name="Author"
-            onChange={({ target }) => setAuthor(target.value)}
-          />
+        <div style={showWhenVisible}>
+          <h2>create new</h2>
+          <form onSubmit={handleCreateBlog}>
+            <div>
+              <label>title:</label>
+              <input
+                type="text"
+                value={title}
+                name="Title"
+                onChange={({ target }) => setTitle(target.value)}
+              />
+            </div>
+            <div>
+              <label>author:</label>
+              <input
+                type="text"
+                value={author}
+                name="Author"
+                onChange={({ target }) => setAuthor(target.value)}
+              />
+            </div>
+            <div>
+              <label>url:</label>
+              <input
+                type="text"
+                value={url}
+                name="Url"
+                onChange={({ target }) => setUrl(target.value)}
+              />
+            </div>
+            <button type="submit" onClick={() => setLoginVisible(false)}>
+              create
+            </button>
+            <button type="button" onClick={() => setLoginVisible(false)}>
+              cancel
+            </button>
+          </form>
         </div>
-        <div>
-          <label>url:</label>
-          <input
-            type="text"
-            value={url}
-            name="Url"
-            onChange={({ target }) => setUrl(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    </div>
-  );
+      </>
+    );
+  };
 
   const logOut = () => {
     window.localStorage.removeItem("loggedBlogappUser");
