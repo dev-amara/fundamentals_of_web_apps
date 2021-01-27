@@ -5,14 +5,12 @@ import Notification from "./components/Notifications";
 import SuccessNotification from "./components/SuccessNotification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import BlogForm from "./components/BlogForm";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -51,27 +49,16 @@ const App = () => {
     }
   };
 
-  const handleCreateBlog = async (event) => {
-    event.preventDefault();
+  const addBlog = async (newObject) => {
     try {
-      // const blogObject = { title: title, author: author, url: url };
-      const blogObject = await blogService.create({
-        title: title,
-        author: author,
-        url: url,
-      });
-      setSuccessMessage(
-        `a new blog ${blogObject.title} by ${blogObject.author}`
-      );
+      const newBlog = await blogService.create(newObject);
+      setSuccessMessage(`a new blog ${newBlog.title} by ${newBlog.author}`);
       setTimeout(() => {
         setSuccessMessage(null);
       }, 5000);
-      setBlogs(blogs.concat(blogObject));
-      setTitle("");
-      setAuthor("");
-      setUrl("");
-    } catch (execption) {
-      setErrorMessage(execption.err.message);
+      setBlogs(blogs.concat(newBlog));
+    } catch (err) {
+      setErrorMessage(err.message);
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
@@ -115,42 +102,7 @@ const App = () => {
           <button onClick={() => setLoginVisible(true)}>new note</button>
         </div>
         <div style={showWhenVisible}>
-          <h2>create new</h2>
-          <form onSubmit={handleCreateBlog}>
-            <div>
-              <label>title:</label>
-              <input
-                type="text"
-                value={title}
-                name="Title"
-                onChange={({ target }) => setTitle(target.value)}
-              />
-            </div>
-            <div>
-              <label>author:</label>
-              <input
-                type="text"
-                value={author}
-                name="Author"
-                onChange={({ target }) => setAuthor(target.value)}
-              />
-            </div>
-            <div>
-              <label>url:</label>
-              <input
-                type="text"
-                value={url}
-                name="Url"
-                onChange={({ target }) => setUrl(target.value)}
-              />
-            </div>
-            <button type="submit" onClick={() => setLoginVisible(false)}>
-              create
-            </button>
-            <button type="button" onClick={() => setLoginVisible(false)}>
-              cancel
-            </button>
-          </form>
+          <BlogForm createBlog={addBlog} setLoginVisible={setLoginVisible} />
         </div>
       </>
     );
