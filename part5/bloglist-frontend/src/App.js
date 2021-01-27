@@ -63,7 +63,7 @@ const App = () => {
         const likedBlog = {
           ...blogToLike[0],
           likes: blogToLike[0].likes + 1,
-          user: blogToLike[0].user,
+          user: blogToLike[0].user.id,
         };
 
         const returnBlog = await blogService.update(id, likedBlog);
@@ -103,6 +103,26 @@ const App = () => {
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
+    }
+  };
+
+  const handleDelete = async (id, title, author) => {
+    if (window.confirm(`Remove blog ${title} by ${author}`)) {
+      await blogService
+        .deleteBlog(id)
+        .then(() => {
+          setBlogs(blogs.filter((p) => p.id !== id));
+          setSuccessMessage(
+            `Information of ${author} has been removed from the server`
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+          setErrorMessage(error.response.data.error);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
+        });
     }
   };
 
@@ -168,7 +188,12 @@ const App = () => {
           </p>
           {blogForm()}
           {blogByOrder.map((blog) => (
-            <Blog key={blog.id} blog={blog} handleLike={handleLike} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              handleLike={handleLike}
+              handleDelete={handleDelete}
+            />
           ))}
         </div>
       )}

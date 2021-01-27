@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Blog = ({ blog, handleLike }) => {
+const Blog = ({ blog, handleLike, handleDelete }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   const blogStyle = {
@@ -14,6 +14,10 @@ const Blog = ({ blog, handleLike }) => {
   const toggleShowDetails = (event) => {
     setShowDetails((prevState) => !prevState);
   };
+
+  const user = JSON.parse(window.localStorage.getItem("loggedBlogappUser"));
+
+  const belongsToUser = blog.user.username === user.username;
 
   const display = () => {
     return showDetails ? (
@@ -36,6 +40,16 @@ const Blog = ({ blog, handleLike }) => {
           </button>
         </div>
         <div>{blog.author}</div>
+        {belongsToUser && (
+          <div>
+            <button
+              type="button"
+              onClick={() => handleDelete(blog.id, blog.title, blog.author)}
+            >
+              remove
+            </button>
+          </div>
+        )}
       </>
     ) : (
       <>
