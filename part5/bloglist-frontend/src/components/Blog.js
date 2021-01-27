@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, handleLike, handleDelete }) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -63,5 +64,9 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
 
   return <div style={blogStyle}>{display()}</div>;
 };
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+}
 
 export default Blog;
