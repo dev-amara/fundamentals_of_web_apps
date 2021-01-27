@@ -99,7 +99,7 @@ const App = () => {
     return (
       <>
         <div style={hideWhenVisible}>
-          <button onClick={() => setLoginVisible(true)}>new note</button>
+          <button onClick={() => setLoginVisible(true)}>create new note</button>
         </div>
         <div style={showWhenVisible}>
           <BlogForm createBlog={addBlog} setLoginVisible={setLoginVisible} />
