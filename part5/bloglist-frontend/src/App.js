@@ -16,6 +16,10 @@ const App = () => {
   const [successMessage, setSuccessMessage] = useState(null);
   const [loginVisible, setLoginVisible] = useState(false);
 
+  const blogByOrder = [...blogs].sort((prev, next) => {
+    return next.likes - prev.likes;
+  });
+
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
   }, []);
@@ -163,7 +167,7 @@ const App = () => {
             {user.name} logged-in <button onClick={logOut}>logout</button>
           </p>
           {blogForm()}
-          {blogs.map((blog) => (
+          {blogByOrder.map((blog) => (
             <Blog key={blog.id} blog={blog} handleLike={handleLike} />
           ))}
         </div>
