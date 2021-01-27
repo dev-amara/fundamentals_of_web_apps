@@ -1,62 +1,62 @@
-import React, { useState, useEffect } from "react";
-import "./index.css";
-import Blog from "./components/Blog";
-import Notification from "./components/Notifications";
-import SuccessNotification from "./components/SuccessNotification";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
-import BlogForm from "./components/BlogForm";
+import React, { useState, useEffect } from 'react'
+import './index.css'
+import Blog from './components/Blog'
+import Notification from './components/Notifications'
+import SuccessNotification from './components/SuccessNotification'
+import blogService from './services/blogs'
+import loginService from './services/login'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [loginVisible, setLoginVisible] = useState(false);
+  const [blogs, setBlogs] = useState([])
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [loginVisible, setLoginVisible] = useState(false)
 
   const blogByOrder = [...blogs].sort((prev, next) => {
-    return next.likes - prev.likes;
-  });
+    return next.likes - prev.likes
+  })
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+    blogService.getAll().then((blogs) => setBlogs(blogs))
+  }, [])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
     }
-  }, []);
+  }, [])
 
   const handleLogin = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     try {
       const user = await loginService.login({
         username,
         password,
-      });
-      window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
-      setUsername("");
-      setPassword("");
+      })
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+      blogService.setToken(user.token)
+      setUser(user)
+      setUsername('')
+      setPassword('')
     } catch (exception) {
-      setErrorMessage("Wrong credentials");
+      setErrorMessage('Wrong credentials')
       setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+        setErrorMessage(null)
+      }, 5000)
     }
-  };
+  }
 
   const handleLike = async (id) => {
-    const blogs = await blogService.getAll();
+    const blogs = await blogService.getAll()
 
-    const blogToLike = blogs.filter((blog) => blog.id === id);
+    const blogToLike = blogs.filter((blog) => blog.id === id)
 
     if (blogToLike) {
       try {
@@ -64,67 +64,67 @@ const App = () => {
           ...blogToLike[0],
           likes: blogToLike[0].likes + 1,
           user: blogToLike[0].user.id,
-        };
+        }
 
-        const returnBlog = await blogService.update(id, likedBlog);
+        const returnBlog = await blogService.update(id, likedBlog)
 
         setSuccessMessage(
           `update a blog ${returnBlog.title} by ${returnBlog.author}`
-        );
+        )
         setTimeout(() => {
-          setSuccessMessage(null);
-        }, 5000);
+          setSuccessMessage(null)
+        }, 5000)
 
-        setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnBlog)));
+        setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnBlog)))
       } catch (err) {
-        setErrorMessage(err.message);
+        setErrorMessage(err.message)
         setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
+          setErrorMessage(null)
+        }, 5000)
       }
     } else {
-      setErrorMessage("blog does not exist");
+      setErrorMessage('blog does not exist')
       setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+        setErrorMessage(null)
+      }, 5000)
     }
-  };
+  }
 
   const addBlog = async (newObject) => {
     try {
-      const newBlog = await blogService.create(newObject);
-      setSuccessMessage(`a new blog ${newBlog.title} by ${newBlog.author}`);
+      const newBlog = await blogService.create(newObject)
+      setSuccessMessage(`a new blog ${newBlog.title} by ${newBlog.author}`)
       setTimeout(() => {
-        setSuccessMessage(null);
-      }, 5000);
-      setBlogs(blogs.concat(newBlog));
+        setSuccessMessage(null)
+      }, 5000)
+      setBlogs(blogs.concat(newBlog))
     } catch (err) {
-      setErrorMessage(err.message);
+      setErrorMessage(err.message)
       setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+        setErrorMessage(null)
+      }, 5000)
     }
-  };
+  }
 
   const handleDelete = async (id, title, author) => {
     if (window.confirm(`Remove blog ${title} by ${author}`)) {
       await blogService
         .deleteBlog(id)
         .then(() => {
-          setBlogs(blogs.filter((p) => p.id !== id));
+          setBlogs(blogs.filter((p) => p.id !== id))
           setSuccessMessage(
             `Information of ${author} has been removed from the server`
-          );
+          )
         })
         .catch((error) => {
-          console.log(error);
-          setErrorMessage(error.response.data.error);
+          console.log(error)
+          setErrorMessage(error.response.data.error)
           setTimeout(() => {
-            setErrorMessage(null);
-          }, 5000);
-        });
+            setErrorMessage(null)
+          }, 5000)
+        })
     }
-  };
+  }
 
   const loginForm = () => (
     <>
@@ -151,11 +151,11 @@ const App = () => {
         <button type="submit">login</button>
       </form>
     </>
-  );
+  )
 
   const blogForm = () => {
-    const hideWhenVisible = { display: loginVisible ? "none" : "" };
-    const showWhenVisible = { display: loginVisible ? "" : "none" };
+    const hideWhenVisible = { display: loginVisible ? 'none' : '' }
+    const showWhenVisible = { display: loginVisible ? '' : 'none' }
 
     return (
       <>
@@ -166,13 +166,13 @@ const App = () => {
           <BlogForm createBlog={addBlog} setLoginVisible={setLoginVisible} />
         </div>
       </>
-    );
-  };
+    )
+  }
 
   const logOut = () => {
-    window.localStorage.removeItem("loggedBlogappUser");
-    setUser(null);
-  };
+    window.localStorage.removeItem('loggedBlogappUser')
+    setUser(null)
+  }
 
   return (
     <div>
@@ -198,7 +198,7 @@ const App = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App

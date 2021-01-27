@@ -1,21 +1,21 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 
 const NoteForm = ({ createBlog, setLoginVisible }) => {
-  const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
+  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
 
   const addBlog = (event) => {
-    event.preventDefault();
-    createBlog(newBlog);
+    event.preventDefault()
+    createBlog(newBlog)
 
-    setNewBlog({ title: "", author: "", url: "" });
-  };
+    setNewBlog({ title: '', author: '', url: '' })
+  }
 
   const onChange = (event) => {
-    event.preventDefault();
-    const { value, name } = event.target;
-    newBlog[name] = value;
-    setNewBlog({ ...newBlog });
-  };
+    event.preventDefault()
+    const { value, name } = event.target
+    newBlog[name] = value
+    setNewBlog({ ...newBlog })
+  }
 
   return (
     <div>
@@ -56,7 +56,7 @@ const NoteForm = ({ createBlog, setLoginVisible }) => {
         </button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default NoteForm;
+export default NoteForm
