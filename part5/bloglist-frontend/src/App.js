@@ -173,7 +173,7 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
   }
-
+  const userConnected = JSON.parse(window.localStorage.getItem('loggedBlogappUser'))
   return (
     <div>
       <Notification message={errorMessage} />
@@ -191,6 +191,7 @@ const App = () => {
             <Blog
               key={blog.id}
               blog={blog}
+              user={userConnected}
               handleLike={handleLike}
               handleDelete={handleDelete}
             />

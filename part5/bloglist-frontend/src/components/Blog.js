@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, handleLike, handleDelete }) => {
+const Blog = ({ blog, user, handleLike, handleDelete }) => {
   const [showDetails, setShowDetails] = useState(false)
 
   const blogStyle = {
@@ -16,8 +16,6 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
     setShowDetails((prevState) => !prevState)
   }
 
-  const user = JSON.parse(window.localStorage.getItem('loggedBlogappUser'))
-
   const belongsToUser = blog.user.username === user.username
 
   const display = () => {
@@ -29,12 +27,12 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
             hide
           </button>
         </div>
-        <div>
+        <div className='url'>
           <a href={blog.url} target="_blank" rel="noopener noreferrer">
             {blog.url}
           </a>
         </div>
-        <div>
+        <div className='like'>
           likes {blog.likes}{' '}
           <button type="button" onClick={() => handleLike(blog.id)}>
             like
