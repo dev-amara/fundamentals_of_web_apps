@@ -38,7 +38,7 @@ const Blog = ({ blog, user, handleLike, handleDelete }) => {
             like
           </button>
         </div>
-        <div>{blog.author}</div>
+        <div className='user'>{blog.author}</div>
         {belongsToUser && (
           <div>
             <button
@@ -53,7 +53,7 @@ const Blog = ({ blog, user, handleLike, handleDelete }) => {
     ) : (
       <>
         {blog.title} {blog.author}
-        <button type="button" onClick={setShowDetails}>
+        <button type="button" onClick={setShowDetails} className='view'>
           view
         </button>
       </>
