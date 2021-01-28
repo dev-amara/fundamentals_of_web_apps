@@ -20,10 +20,11 @@ const NoteForm = ({ createBlog, setLoginVisible }) => {
   return (
     <div>
       <h2>create new</h2>
-      <form onSubmit={addBlog}>
+      <form onSubmit={addBlog} className="form">
         <div>
           <label>title:</label>
           <input
+            className="title"
             type="text"
             value={newBlog.title}
             name="title"
@@ -33,6 +34,7 @@ const NoteForm = ({ createBlog, setLoginVisible }) => {
         <div>
           <label>author:</label>
           <input
+            className="author"
             type="text"
             value={newBlog.author}
             name="author"
@@ -42,6 +44,7 @@ const NoteForm = ({ createBlog, setLoginVisible }) => {
         <div>
           <label>url:</label>
           <input
+            className="url"
             type="text"
             value={newBlog.url}
             name="url"
