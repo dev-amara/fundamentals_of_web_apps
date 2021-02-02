@@ -7,7 +7,7 @@ describe('Blog app', function() {
       password: 'admin'
     }
     cy.request('POST', 'http://localhost:3003/api/users/', user).then(body => {
-      localStorage.setItem('loggedNoteappUser', JSON.stringify(body))
+      localStorage.setItem('loggedBlogappUser', JSON.stringify(body))
       cy.visit('http://localhost:3000')
     })
   })
@@ -39,6 +39,28 @@ describe('Blog app', function() {
         .and('have.css', 'color', 'rgb(255, 0, 0)')
         .and('have.css', 'border-style', 'solid')
       cy.get('html').should('not.contain', 'Admin Admin logged in')
+    })
+  })
+
+  describe.only('When logged in', function() {
+    beforeEach(function() {
+      cy.request('POST', 'http://localhost:3003/api/login', {
+        'username': 'admin',
+        'password': 'admin'
+      }).then(({ body }) => {
+        localStorage.setItem('loggedBlogappUser', JSON.stringify(body))
+        cy.visit('http://localhost:3000')
+      })
+    })
+
+    it('A blog can be created', function() {
+      cy.contains('create new note').click()
+      cy.get('.title').type('a blog created by cypress')
+      cy.get('.author').type('cypress')
+      cy.get('.url').type('www.cypress.com')
+      cy.get('#save').click()
+
+      cy.contains('a blog created by cypress')
     })
   })
 })

@@ -51,7 +51,7 @@ const NoteForm = ({ createBlog, setLoginVisible }) => {
             onChange={onChange}
           />
         </div>
-        <button type="submit" onClick={() => setLoginVisible(false)}>
+        <button id="save" type="submit" onClick={() => setLoginVisible(false)}>
           create
         </button>
         <button type="button" onClick={() => setLoginVisible(false)}>
