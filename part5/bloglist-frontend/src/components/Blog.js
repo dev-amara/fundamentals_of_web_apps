@@ -42,6 +42,7 @@ const Blog = ({ blog, user, handleLike, handleDelete }) => {
         {belongsToUser && (
           <div>
             <button
+              id='remove'
               type="button"
               onClick={() => handleDelete(blog.id, blog.title, blog.author)}
             >

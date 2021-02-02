@@ -65,5 +65,22 @@ describe('Blog app', function() {
       cy.contains('like').click()
       cy.contains('update a blog a blog created by cypress by cypress')
     })
+
+    it('can be deleted by the user who created it', function() {
+      cy.createBlog({ 'title': 'a blog created by cypress', 'author': 'cypress', 'url':'www.cypress.com' })
+      cy.contains('logout').click()
+      const user = {
+        name: 'mluukkai mara',
+        username: 'mluukkai',
+        password: 'wrong'
+      }
+      cy.request('POST', 'http://localhost:3003/api/users/', user).then(body => {
+        localStorage.setItem('loggedBlogappUser', JSON.stringify(body))
+        cy.visit('http://localhost:3000')
+      })
+      cy.login({ 'username': 'mluukkai', 'password': 'wrong' })
+      cy.contains('view').click()
+      cy.get('#remove').should('not.exist')
+    })
   })
 })
