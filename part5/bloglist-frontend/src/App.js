@@ -186,7 +186,7 @@ const App = () => {
         <div>
           <h2>blogs</h2>
           <p>
-            {user.name} logged-in <button onClick={logOut}>logout</button>
+            {user.name} logged-in <button id='logout-button' onClick={logOut}>logout</button>
           </p>
           {blogForm()}
           {blogByOrder.map((blog) => (
