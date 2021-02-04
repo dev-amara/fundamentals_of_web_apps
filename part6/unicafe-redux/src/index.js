@@ -3,46 +3,35 @@ import ReactDOM from "react-dom";
 import { createStore } from "redux";
 import reducer from "./reducer";
 
-const store = createStore(
-  reducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-);
+const store = createStore(reducer);
 
 const App = () => {
-  const good = () => {
-    store.dispatch({
-      type: "GOOD",
-    });
-  };
-
-  const ok = () => {
-    store.dispatch({
-      type: "OK",
-    });
-  };
-
-  const bad = () => {
-    store.dispatch({
-      type: "BAD",
-    });
-  };
-
-  const reset = () => {
-    store.dispatch({
-      type: "ZERO",
-    });
+  const action = (type) => {
+    return () => {
+      store.dispatch({
+        type,
+      });
+    };
   };
 
   return (
-    <div>
-      <button onClick={good}>good</button>
-      <button onClick={ok}>neutral</button>
-      <button onClick={bad}>bad</button>
-      <button onClick={reset}>reset stats</button>
-      <div>good {store.getState().good}</div>
-      <div>neutral {store.getState().ok}</div>
-      <div>bad {store.getState().bad}</div>
-    </div>
+    <>
+        <div>
+          <h1>Give Feedback</h1>
+          <div>
+            <button onClick={action("GOOD")}>good</button>
+            <button onClick={action("OK")}>neutral</button>
+            <button onClick={action("BAD")}>bad</button>
+            <button onClick={action("ZERO")}>reset stats</button>
+          </div>
+        </div>
+        <div>
+          <h1>Statistics</h1>
+          <p>Good {store.getState().good}</p>
+          <p>Neutral {store.getState().ok}</p>
+          <p>Bad {store.getState().bad}</p>
+        </div>
+    </>
   );
 };
 
