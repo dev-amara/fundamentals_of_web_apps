@@ -1,5 +1,3 @@
-import { store } from '../index'
-
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -20,35 +18,11 @@ const asObject = (anecdote) => {
   }
 }
 
-export const voteAnecdote = (id) => {
-  const anecdoteToChange = store.getState().find((a) => a.id === id);
-  console.log('anecdotes', anecdoteToChange)
-  return {
-    type: 'UPDATE_ANECDOTE',
-    data: {
-      ...anecdoteToChange,
-      votes: anecdoteToChange.votes + 1,
-      id: id
-    }
-  }
-};
-
-export const createAnecdote = (content) => {
-  return {
-    type: 'NEW_ANECDOTE',
-    data: {
-      content,
-      votes: 0,
-      id: getId()
-    }
-  }
-}
-
-const initialState = anecdotesAtStart.map(asObject)
+const initialState = anecdotesAtStart.map(asObject);
 
 const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
+  console.log("state now: ", state);
+  console.log("action", action);
 
   switch (action.type) {
   case "INIT_ANECDOTES":
@@ -61,6 +35,30 @@ const reducer = (state = initialState, action) => {
   default:
     return state;
   }
-}
+};
 
-export default reducer
+export const voteAnecdote = (id, anecdotes) => {
+  const anecdoteToChange = anecdotes.find((a) => a.id === id);
+  console.log('anecdoteToChange', anecdoteToChange )
+  return {
+    type: "UPDATE_ANECDOTE",
+    data: {
+      ...anecdoteToChange,
+      votes: anecdoteToChange.votes + 1,
+      id: id,
+    },
+  };
+};
+
+export const createAnecdote = (content) => {
+  return {
+    type: "NEW_ANECDOTE",
+    data: {
+      content,
+      votes: 0,
+      id: getId(),
+    },
+  };
+};
+
+export default reducer;
