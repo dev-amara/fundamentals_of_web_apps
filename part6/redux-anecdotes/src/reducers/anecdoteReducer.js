@@ -1,5 +1,5 @@
 import anecdoteService from "../services/anecdotes";
-import { notificationChange } from "./notificationReducer";
+import { setNotification } from './notificationReducer'
 
 const reducer = (state = [], action) => {
   switch (action.type) {
@@ -35,9 +35,7 @@ export const voteAnecdote = (id) => {
     const updatedAnecdote = await anecdoteService.update(id, votedAnecdote);
     dispatch({ type: "UPDATE_ANECDOTE", data: updatedAnecdote });
 
-    dispatch(
-      notificationChange(`You updated for : ${updatedAnecdote.content}`)
-    );
+    dispatch(setNotification(`you voted : ${updatedAnecdote.content}`, 10));
   };
 };
 
@@ -48,6 +46,7 @@ export const createAnecdote = (content) => {
       type: "NEW_ANECDOTE",
       data: newAnecdote,
     });
+    dispatch(setNotification(`new anecdote  : ${newAnecdote.content}`, 5000));
   };
 };
 

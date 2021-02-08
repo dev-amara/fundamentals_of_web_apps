@@ -16,4 +16,14 @@ export const notificationChange = notification => {
   }
 }
 
+export const setNotification = (message, timeout) => {
+  return async(dispatch) => {
+    dispatch(notificationChange(message));
+
+    setTimeout(() => {
+      dispatch(notificationChange(null))
+    }, timeout)
+  };
+};
+
 export default notificationReducer;
