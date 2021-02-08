@@ -1,28 +1,33 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { voteAnecdote } from "../reducers/anecdoteReducer";
-import { notificationChange } from '../reducers/notificationReducer'
+import { notificationChange } from "../reducers/notificationReducer";
 
 const AnecdoteList = () => {
   const anecdotes = useSelector((state) => state.anecdotes);
+  const filter = useSelector((state) => state.filter);
   const dispatch = useDispatch();
 
   const anecdotesByVotesDesc = [...anecdotes].sort((a, b) => b.votes - a.votes);
 
+  const anecdotesToShow = anecdotesByVotesDesc.filter((anecdote) =>
+    anecdote.content.toLowerCase().includes(filter.toLowerCase())
+  );
+
   const vote = (id, anecdotes) => {
     console.log("vote :", id);
-    const anecdote = anecdotes.filter(obj => obj.id ===id)[0]
+    const anecdote = anecdotes.filter((obj) => obj.id === id)[0];
     dispatch(voteAnecdote(id, anecdotes));
     const message = `You voted : ${anecdote.content}`;
     dispatch(notificationChange(message));
     setTimeout(() => {
-      dispatch(notificationChange(null))
-    }, 5000)
+      dispatch(notificationChange(null));
+    }, 5000);
   };
 
   return (
     <>
-      {anecdotesByVotesDesc.map((anecdote) => (
+      {anecdotesToShow.map((anecdote) => (
         <div key={anecdote.id}>
           <div>{anecdote.content}</div>
           <div>
