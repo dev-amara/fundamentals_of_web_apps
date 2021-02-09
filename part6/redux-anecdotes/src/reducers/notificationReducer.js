@@ -1,28 +1,51 @@
-export const initialState = '';
+import { uid } from "react-uid";
+
+export const initialState = [];
 
 const notificationReducer = (state = initialState, action) => {
   switch (action.type) {
-  case "SET_NOTIFICATION":
-    return action.notification;
+  case "NEW_NOTIFICATION":
+    return state.concat(action.data);
+  case "REMOVE_NOTIFICATION":
+    const id = action.id;
+    return state.filter((notification) => notification.id !== id);
   default:
     return state;
   }
 };
 
-export const notificationChange = notification => {
+export const newNotification = (message) => {
   return {
-    type: 'SET_NOTIFICATION',
-    notification,
-  }
-}
+    type: "NEW_NOTIFICATION",
+    data: { id: uid({}), message},
+  };
+};
 
-export const setNotification = (message, timeout) => {
-  return async(dispatch) => {
-    dispatch(notificationChange(message));
+export const removeNotification = (id) => {
+  return {
+    type: "REMOVE_NOTIFICATION",
+    id,
+  };
+};
+
+/**
+ *  Queues a new notification to be removed after the specified timeout
+ * @param {string} message
+ * @param {number} timeout
+ * @param {string=} level - success | info | warning
+ *
+ * @return {function} thunk
+ */
+export const displayNotification = (message, timeout) => {
+  return (dispatch) => {
+    const action = newNotification(message);
+    const id = action.data.id;
+
+    dispatch(action);
 
     setTimeout(() => {
-      dispatch(notificationChange(null))
-    }, timeout)
+      dispatch(removeNotification(id));
+    }, timeout);
   };
 };
 

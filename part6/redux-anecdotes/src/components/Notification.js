@@ -1,21 +1,40 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React from "react";
+import { connect } from "react-redux";
 
-const Notification = () => {
-  const notification = useSelector((state) => state.notifications)
+const Notification = ({ notificationsToShow }) => {
   const style = {
-    border: 'solid',
+    border: "solid",
     padding: 10,
-    borderWidth: 1
+    borderWidth: 1,
+  };
+
+  return (
+    <div style={style}>
+      {notificationsToShow.map((notification) => (
+        <div key={notification.id}>{notification.message}</div>
+      ))}
+    </div>
+  );
+};
+
+const notificationsToShow = (notifications) => {
+  if (notifications.length <= 3) {
+    return notifications;
+  } else {
+    const notificationsByDateDesc = [...notifications].sort(
+      (a, b) => b.date - a.date
+    );
+
+    const lastThreeNotifications = notificationsByDateDesc
+      .slice(0, 3)
+      .reverse();
+
+    return lastThreeNotifications;
   }
+};
 
-  const display = () => {
-    if (notification) {
-      return <div style={style}>{notification}</div>
-    }
-  }
+const mapStateToProps = (state) => {
+  return { notificationsToShow: notificationsToShow(state.notifications) };
+};
 
-  return <>{display()}</>;
-}
-
-export default Notification
+export default connect(mapStateToProps)(Notification);

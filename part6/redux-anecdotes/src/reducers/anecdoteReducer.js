@@ -1,10 +1,12 @@
-import anecdoteService from "../services/anecdotes";
-import { setNotification } from './notificationReducer'
+import anecdotesService from "../services/anecdotes";
+import { displayNotification } from "./notificationReducer";
 
-const reducer = (state = [], action) => {
+export const initialState = [];
+
+const anecdoteReducer = (state = initialState, action) => {
   switch (action.type) {
     case "INIT_ANECDOTES":
-      return action.data;
+      return action.data || state;
     case "NEW_ANECDOTE":
       return state.concat(action.data);
     case "UPDATE_ANECDOTE":
@@ -15,39 +17,34 @@ const reducer = (state = [], action) => {
   }
 };
 
-export const initializeAnecdotes = () => {
+export const initAnecdotes = () => {
   return async (dispatch) => {
-    const anecdotes = await anecdoteService.getAll();
-    dispatch({
-      type: "INIT_ANECDOTES",
-      data: anecdotes,
-    });
-  };
-};
-
-export const voteAnecdote = (id) => {
-  return async (dispatch, getState) => {
-    const anecdoteToChange = getState().anecdotes.find((a) => a.id === id);
-    const votedAnecdote = {
-      ...anecdoteToChange,
-      votes: anecdoteToChange.votes + 1,
-    };
-    const updatedAnecdote = await anecdoteService.update(id, votedAnecdote);
-    dispatch({ type: "UPDATE_ANECDOTE", data: updatedAnecdote });
-
-    dispatch(setNotification(`you voted : ${updatedAnecdote.content}`, 10));
+      const anecdotes = await anecdotesService.getAll();
+      dispatch({ type: "INIT_ANECDOTES", data: anecdotes });
   };
 };
 
 export const createAnecdote = (content) => {
   return async (dispatch) => {
-    const newAnecdote = await anecdoteService.createNew(content);
-    dispatch({
-      type: "NEW_ANECDOTE",
-      data: newAnecdote,
-    });
-    dispatch(setNotification(`new anecdote  : ${newAnecdote.content}`, 5000));
+    const newAnecdote = await anecdotesService.create(content);
+    dispatch({ type: "NEW_ANECDOTE", data: newAnecdote });
+    const message = `You added "${newAnecdote.content}"`;
+    dispatch(displayNotification(message, 5000));
   };
 };
 
-export default reducer;
+export const voteForAnecdote = (id) => {
+  return async (dispatch, getState) => {
+      const anecdoteToChange = getState().anecdotes.find((a) => a.id === id);
+      const votedAnecdote = {
+        ...anecdoteToChange,
+        votes: anecdoteToChange.votes + 1,
+      };
+      const updatedAnecdote = await anecdotesService.update(id, votedAnecdote);
+      dispatch({ type: "UPDATE_ANECDOTE", data: updatedAnecdote });
+      const message = `You voted for "${updatedAnecdote.content}"`;
+      dispatch(displayNotification(message, 2000));
+  };
+};
+
+export default anecdoteReducer;

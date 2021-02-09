@@ -1,21 +1,10 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { voteAnecdote } from "../reducers/anecdoteReducer";
+import { connect} from "react-redux";
+import { voteForAnecdote } from '../reducers/anecdoteReducer'
 
-const AnecdoteList = () => {
-  const dispatch = useDispatch();
-  const anecdotes = useSelector((state) => state.anecdotes);
-  const filter = useSelector((state) => state.filter);
+const AnecdoteList = ({ anecdotesToShow, voteForAnecdote }) => {
 
-  const anecdotesByVotesDesc = [...anecdotes].sort((a, b) => b.votes - a.votes);
-
-  const anecdotesToShow = anecdotesByVotesDesc.filter((anecdote) => {
-    if (filter === "") return true;
-
-    return anecdote.content.toLowerCase().includes(filter.toLowerCase());
-  });
-
-  const vote = (id) => dispatch(voteAnecdote(id, anecdotes));
+  const vote = (id) => (voteForAnecdote(id));
 
   return (
     <>
@@ -32,4 +21,15 @@ const AnecdoteList = () => {
   );
 };
 
-export default AnecdoteList;
+const mapStateToProps = (state) => {
+  const { anecdotes, filter } = state;
+  const anecdotesByVotesDesc = [...anecdotes].sort((a, b) => b.votes - a.votes);
+  const anecdotesToShow = anecdotesByVotesDesc.filter((a) => {
+    if (filter === "") return true;
+    return a.content.toLowerCase().includes(filter.toLowerCase());
+  });
+
+  return { anecdotesToShow };
+};
+
+export default connect(mapStateToProps, { voteForAnecdote })(AnecdoteList);
