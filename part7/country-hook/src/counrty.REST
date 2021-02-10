@@ -1,0 +1,4 @@
+GET https://restcountries.eu/rest/v2/all
+Accept: application/json
+
+###
