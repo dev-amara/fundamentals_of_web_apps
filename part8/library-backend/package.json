@@ -1,0 +1,17 @@
+{
+  "name": "library-backend",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Amara Bamba",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server": "^2.21.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.11.17",
+    "mongoose-unique-validator": "^2.0.3"
+  }
+}
