@@ -1,17 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMutation } from "@apollo/client";
 import { ALL_AUTHORS, EDIT_BORN } from "../queries";
 import Select from "react-select";
+import "../index.css";
 
 const Authors = ({ show, authors }) => {
   const [name, setName] = useState("");
-  const [born, setBorn] = useState('');
+  const [born, setBorn] = useState("");
 
-  const selectOptions = authors.map((a) => ({ value: a.name, label: a.name}));
+  const selectOptions = authors.map((a) => ({ value: a.name, label: a.name }));
 
-  const [changeBorn] = useMutation(EDIT_BORN, {
+  const [changeBorn, result] = useMutation(EDIT_BORN, {
     refetchQueries: [{ query: ALL_AUTHORS }],
+    onError: (error) => {
+      console.log(error);
+    },
   });
+
+  useEffect(() => {
+    if (result.data && !result.data.editAuthor) {
+      console.log("name not found");
+    }
+  }, [result.data]); // eslint-disable-line
 
   if (!show) {
     return null;
@@ -51,11 +61,11 @@ const Authors = ({ show, authors }) => {
       <form onSubmit={updateAuthor}>
         <div>
           <label>name:</label>
-          {/*<input*/}
-          {/*  value={name}*/}
-          {/*  onChange={({ target }) => setName(target.value)}*/}
-          {/*/>*/}
-          <Select options={selectOptions} onChange={handleSelect}/>
+          <Select
+            className="authorInput"
+            options={selectOptions}
+            onChange={handleSelect}
+          />
         </div>
         <div>
           <label>born:</label>
