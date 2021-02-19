@@ -1,49 +1,76 @@
-import React, { useState, useEffect } from 'react'
-import { useMutation } from '@apollo/client'
-import { EDIT_NUMBER } from '../queries'
+import React, { useState } from "react";
+import { useMutation } from "@apollo/client";
 
-const PhoneForm = ({ notify }) => {
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
+import { CREATE_PERSON } from "../queries";
 
-  const [ changeNumber, result] = useMutation(EDIT_NUMBER)
+const PersonForm = ({ setError, updateCacheWith }) => {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [street, setStreet] = useState("");
+  const [city, setCity] = useState("");
 
-  useEffect(() => {
-    if ( result.data && !result.data.editNumber) {
-      notify('name not found')
-    }
-  }, [result.data]) // eslint-disable-line
+  const [createPerson] = useMutation(CREATE_PERSON, {
+    onError: (error) => {
+      setError(error.graphQLErrors[0].message);
+    },
+    update: (store, response) => {
+      updateCacheWith(response.data.addPerson);
+    },
+  });
 
   const submit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
+    createPerson({
+      variables: {
+        name,
+        street,
+        city,
+        phone: phone.length > 0 ? phone : null,
+      },
+    });
 
-    changeNumber({ variables: { name, phone } })
-
-    setName('')
-    setPhone('')
-  }
+    setName("");
+    setPhone("");
+    setStreet("");
+    setCity("");
+  };
 
   return (
     <div>
-      <h2>change number</h2>
-
+      <h2>create new</h2>
       <form onSubmit={submit}>
         <div>
-          name <input
+          name{" "}
+          <input
             value={name}
             onChange={({ target }) => setName(target.value)}
           />
         </div>
         <div>
-          phone <input
+          phone{" "}
+          <input
             value={phone}
             onChange={({ target }) => setPhone(target.value)}
           />
         </div>
-        <button type='submit'>change number</button>
+        <div>
+          street{" "}
+          <input
+            value={street}
+            onChange={({ target }) => setStreet(target.value)}
+          />
+        </div>
+        <div>
+          city{" "}
+          <input
+            value={city}
+            onChange={({ target }) => setCity(target.value)}
+          />
+        </div>
+        <button type="submit">add!</button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default PhoneForm
+export default PersonForm;

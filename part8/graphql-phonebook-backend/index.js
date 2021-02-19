@@ -1,9 +1,4 @@
-const {
-  ApolloServer,
-  UserInputError,
-  gql,
-  AuthenticationError,
-} = require("apollo-server");
+const { ApolloServer, UserInputError, gql } = require("apollo-server");
 const jwt = require("jsonwebtoken");
 
 const mongoose = require("mongoose");
@@ -12,7 +7,8 @@ const User = require("./models/user");
 
 mongoose.set("useFindAndModify", false);
 
-const MONGODB_URI = "mongodb+srv://user:amara@cluster0.zkvaf.mongodb.net/phonebook-app?retryWrites=true&w=majority";
+const MONGODB_URI =
+  "mongodb+srv://user:amara@cluster0.zkvaf.mongodb.net/phonebook-app?retryWrites=true&w=majority";
 
 const JWT_SECRET = "NEED_HERE_A_SECRET_KEY";
 
@@ -42,6 +38,7 @@ const typeDefs = gql`
     name: String!
     phone: String
     address: Address!
+    friendOf: [User!]!
     id: ID!
   }
   type Address {
@@ -70,17 +67,25 @@ const typeDefs = gql`
     login(username: String!, password: String!): Token
     addAsFriend(name: String!): User
   }
+  type Subscription {
+    personAdded: Person!
+  }
 `;
+const { PubSub } = require("apollo-server");
+const pubsub = new PubSub();
 
 const resolvers = {
   Query: {
     personCount: () => Person.collection.countDocuments(),
     allPersons: (root, args) => {
+      console.log("Person.find");
       if (!args.phone) {
-        return Person.find({});
+        return Person.find({}).populate("friendOf");
       }
 
-      return Person.find({ phone: { $exists: args.phone === "YES" } });
+      return Person.find({ phone: { $exists: args.phone === "YES" } }).populate(
+        "friendOf"
+      );
     },
     findPerson: (root, args) => Person.findOne({ name: args.name }),
     me: (root, args, context) => {
@@ -94,6 +99,15 @@ const resolvers = {
         city: root.city,
       };
     },
+    friendOf: async (root) => {
+      const friends = await User.find({
+        friends: {
+          $in: [root._id]
+        }
+      })
+
+      return friends
+    }
   },
   Mutation: {
     addPerson: async (root, args, context) => {
@@ -114,6 +128,8 @@ const resolvers = {
           invalidArgs: args,
         });
       }
+
+      pubsub.publish("PERSON_ADDED", { personAdded: person });
 
       return person;
     },
@@ -172,6 +188,11 @@ const resolvers = {
       return currentUser;
     },
   },
+  Subscription: {
+    personAdded: {
+      subscribe: () => pubsub.asyncIterator(["PERSON_ADDED"]),
+    },
+  },
 };
 
 const server = new ApolloServer({
@@ -191,6 +212,7 @@ const server = new ApolloServer({
   },
 });
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`);
+  console.log(`Subscriptions ready at ${subscriptionsUrl}`);
 });
