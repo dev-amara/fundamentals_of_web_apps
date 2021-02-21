@@ -10,7 +10,6 @@ const App = () => {
   const [token, setToken] = useState(null);
   const [page, setPage] = useState("authors");
   const result = useQuery(ALL_AUTHORS);
-  // const result1 = useQuery(ALL_BOOKS);
   const client = useApolloClient();
 
   useEffect(() => {
@@ -23,10 +22,6 @@ const App = () => {
   if (result.loading) {
     return <div>loading...</div>;
   }
-  // if (result1.loading) {
-  //   return <div>loading...</div>;
-  // }
-
 
   const logout = () => {
     setToken(null)

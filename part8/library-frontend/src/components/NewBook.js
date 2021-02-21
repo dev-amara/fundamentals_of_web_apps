@@ -31,7 +31,7 @@ const NewBook = ({ show }) => {
     setAuhtor("");
     setGenres([]);
     setGenre("");
-    window.location.reload();
+    // window.location.reload();
   };
 
   const addGenre = () => {

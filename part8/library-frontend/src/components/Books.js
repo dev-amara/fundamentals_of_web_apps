@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { useLazyQuery } from "@apollo/client";
-import { ALL_BOOKS } from "../queries";
+import { useLazyQuery, useSubscription } from "@apollo/client";
+import { ALL_BOOKS, BOOK_ADDED } from "../queries";
 
 const Books = ({ show }) => {
   const [books, setBooks] = useState([]);
   const [genre, setGenre] = useState(null);
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      setBooks(books.concat(subscriptionData.data.bookAdded));
+      window.alert('state has been updated')
+    },
+  });
 
   const [getAllBooks, getAllBooksResults] = useLazyQuery(ALL_BOOKS);
 
@@ -15,7 +22,7 @@ const Books = ({ show }) => {
   useEffect(() => {
     const { called, data, networkStatus } = getAllBooksResults;
     if (called && networkStatus > 6) {
-       const newBook = data ? data.allBooks : [];
+      const newBook = data ? data.allBooks : [];
       setBooks(newBook);
     }
   }, [getAllBooksResults]);
@@ -45,16 +52,16 @@ const Books = ({ show }) => {
         </tbody>
       </table>
       <div>
-        <button onClick={()=> setGenre('refactoring')}>refactoring</button>
-        <button onClick={()=> setGenre('agile')}>agile</button>
-        <button onClick={()=> setGenre('patterns')}>patterns</button>
-        <button onClick={()=> setGenre('design')}>design</button>
-        <button onClick={()=> setGenre('crime')}>crime</button>
-        <button onClick={()=> setGenre('classic')}>classic</button>
-        <button onClick={()=> setGenre('')}>all genres</button>
+        <button onClick={() => setGenre("refactoring")}>refactoring</button>
+        <button onClick={() => setGenre("agile")}>agile</button>
+        <button onClick={() => setGenre("patterns")}>patterns</button>
+        <button onClick={() => setGenre("design")}>design</button>
+        <button onClick={() => setGenre("crime")}>crime</button>
+        <button onClick={() => setGenre("classic")}>classic</button>
+        <button onClick={() => setGenre("")}>all genres</button>
       </div>
     </div>
   );
 };
 
-export default Books
+export default Books;
