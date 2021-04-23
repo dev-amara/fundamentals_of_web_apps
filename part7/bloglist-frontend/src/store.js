@@ -1,19 +1,19 @@
-import { createStore, combineReducers, applyMiddleware } from "redux";
-import { composeWithDevTools } from "redux-devtools-extension";
-import thunk from "redux-thunk";
+import { createStore, combineReducers, applyMiddleware } from 'redux'
+import { composeWithDevTools } from 'redux-devtools-extension'
+import thunk from 'redux-thunk'
 
-import blogReducer from "./reducers/blogReducer";
-import userReducer from "./reducers/userReducer";
-import authReducer from "./reducers/authReducer";
-import notificationReducer from "./reducers/notificationReducer";
+import blogReducer from './reducers/blogReducer'
+import userReducer from './reducers/userReducer'
+import authReducer from './reducers/authReducer'
+import notificationReducer from './reducers/notificationReducer'
 
 const reducer = combineReducers({
-    blogs: blogReducer,
-    users: userReducer,
-    notifications: notificationReducer,
-    auth: authReducer,
-});
+  blogs: blogReducer,
+  users: userReducer,
+  notifications: notificationReducer,
+  auth: authReducer,
+})
 
-const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));
+const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)))
 
-export default store;
+export default store
